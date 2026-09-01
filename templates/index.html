@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>حاسبة التوصيل</title>
+</head>
+<body>
+    <h1>حاسبة أرباح التوصيل</h1>
+
+    <!-- حقول إدخال البيانات -->
+    <label>الشهر (1-12):</label>
+    <input type="number" id="month" min="1" max="12" value="1"><br><br>
+
+    <label>إجمالي الدخل:</label>
+    <input type="number" id="total_income" step="any"><br><br>
+
+    <!-- قائمة منسدلة لنسبة الضريبة -->
+    <label>نسبة الضريبة (%):</label>
+    <select id="tax_rate">
+        <option value="5">5%</option>
+        <option value="15">15%</option>
+    </select><br><br>
+
+    <!-- قائمة منسدلة لكود الأتيكو -->
+    <label>كود الأتيكو:</label>
+    <select id="ateco_code">
+        <option value="1">كود 1 (نسبة متغيرة INPS)</option>
+        <option value="2">كود 2 (قيمة ثابتة INPS)</option>
+    </select><br><br>
+
+    <label>مصاريف السيارة اليومية:</label>
+    <input type="number" id="car_expenses" step="any"><br><br>
+
+    <label>أيام العمل هذا الشهر:</label>
+    <input type="number" id="days_worked" min="0" max="31"><br><br>
+
+    <label>تأمين السيارة السنوي (اختياري):</label>
+    <input type="number" id="car_insurance" value="0" step="any"><br><br>
+
+    <!-- زر الحساب -->
+    <button onclick="sendData()">احسب صافي الربح</button>
+
+    <!-- مكان ظهور النتيجة -->
+    <h2 id="result" style="color: blue;">النتيجة ستظهر هنا...</h2>
+
+    <!-- كود الجافاسكريبت المحدث -->
+    <script>
+        async function sendData() {
+            const monthVal = document.getElementById('month').value;
+            const incomeVal = document.getElementById('total_income').value;
+            const taxVal = document.getElementById('tax_rate').value;
+            const atecoVal = document.getElementById('ateco_code').value;
+            const expensesVal = document.getElementById('car_expenses').value;
+            const daysVal = document.getElementById('days_worked').value;
+            const insuranceVal = document.getElementById('car_insurance').value;
+
+            const resultElement = document.getElementById('result');
+
+            // التحقق من الحقول الأساسية
+            if (incomeVal === "" || expensesVal === "" || daysVal === "") {
+                resultElement.innerText = "❌ تنبيه: الرجاء تعبئة جميع الحقول الأساسية!";
+                resultElement.style.color = "red";
+                return;
+            }
+
+            const requestData = {
+                month: parseInt(monthVal),
+                total_income: parseFloat(incomeVal),
+                tax_rate: parseFloat(taxVal),           // تأخذ القيمة المختارة من القائمة (5 أو 15)
+                ateco_code: atecoVal,                   // تأخذ القيمة المختارة من القائمة ('1' أو '2')
+                car_expenses_per_day: parseFloat(expensesVal),
+                how_many_days_worked_this_month: parseInt(daysVal),
+                car_insurance: insuranceVal === "" ? 0 : parseFloat(insuranceVal)
+            };
+
+            try {
+                const response = await fetch('/calculation', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(requestData)
+                });
+
+                if (!response.ok) {
+                    resultElement.innerText = "❌ حدث خطأ: البيانات المرسلة غير صالحة!";
+                    resultElement.style.color = "red";
+                    return;
+                }
+
+                const resultData = await response.json();
+                resultElement.innerText = "✅ صافي الربح: " + resultData.net_income + " يورو";
+                resultElement.style.color = "green";
+
+            } catch (error) {
+                resultElement.innerText = "❌ عذراً، لا يمكن الاتصال بالسيرفر حالياً.";
+                resultElement.style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>
