@@ -1,132 +1,75 @@
 <!DOCTYPE html>
-<html dir="ltr" lang="it">
+<html lang="it">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-    <title>Calcolo Netto Totale Rider - Regime Forfettario</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h1 { color: #333; font-size: 22px; text-align: center; margin-bottom: 25px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #444; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; margin-bottom: 15px; }
-        button { width: 100%; background-color: #28a745; color: white; padding: 12px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin-top: 10px; }
-        button:hover { background-color: #218838; }
-        #result { font-size: 18px; text-align: center; margin-top: 20px; padding: 15px; border-radius: 5px; background: #e9ecef; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolatore Netto Forfettario - Rider</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <div class="container">
-        <h1>Calcolo Netto Totale Rider - Regime Forfettario</h1>
+<body class="bg-gray-100 min-h-screen py-6 px-4">
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden md:max-w-lg p-6">
+        <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Calcolatore Netto Forfettario</h1>
 
-        <label>Incasso lordo totale:</label>
-        <input type="number" id="total_income" step="any">
+        <form id="calculatorForm" class="space-y-4">
+            <!-- Incasso Lordo -->
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2">Incasso Lordo (€)</label>
+                <input type="number" step="0.01" name="gross_income" required
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Es. 15000">
+            </div>
 
-        <label>P. IVA Regime Forfettario (5% o 15%):</label>
-        <select id="tax_rate">
-            <option value="" disabled selected>-- Seleziona aliquota --</option>
-            <option value="5">5%</option>
-            <option value="15">15%</option>
-        </select>
+            <!-- Codice ATECO (بدون افتراضي) -->
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2">Codice ATECO</label>
+                <select name="ateco_code" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700">
+                    <option value="" disabled selected>Seleziona codice ATECO</option>
+                    <option value="53.20.00">53.20.00 (Delivery / Spedizioni)</option>
+                    <option value="82.99.99">82.99.99 (Altri servizi di supporto)</option>
+                </select>
+            </div>
 
-        <label>Codice ATECO:</label>
-        <select id="ateco_code">
-            <option value="" disabled selected>-- Seleziona codice ATECO --</option>
-            <option value="53.20.00">53.20.00 (Gestione Separata - % variabile)</option>
-            <option value="82.99.99">82.99.99 (Commercianti - Contributo fisso)</option>
-        </select>
+            <!-- Aliquota Imposta Sostitutiva (بدون افتراضي) -->
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2">Aliquota Imposta Sostitutiva</label>
+                <select name="tax_rate" required class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-700">
+                    <option value="" disabled selected>Seleziona aliquota</option>
+                    <option value="0.05">5% (Nuove attività / Regime startup)</option>
+                    <option value="0.15">15% (Regime forfettario standard)</option>
+                </select>
+            </div>
 
-        <label>Per quanti mesi hai incassato questa somma (<span style="color: red;">inclusi i mesi di pausa o ferie</span>):</label>
-        <input type="number" id="how_many_months" min="1" max="12">
+            <!-- Spese Mezzo -->
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2">Spese Mezzo (€)</label>
+                <input type="number" step="0.01" name="vehicle_expense"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Inserisci spesa (es. carburante, manutenzione)">
+            </div>
 
-        <label>Spese del mezzo di trasporto giornaliere (auto, moto, bici, ecc. - opzionale):</label>
-        <input type="number" id="car_expenses_per_day" value="0" step="any" oninput="toggleDaysField()">
+            <!-- Assicurazione mezzo -->
+            <div>
+                <label class="block text-gray-700 text-sm font-bold mb-2">Assicurazione mezzo (€)</label>
+                <input type="number" step="0.01" name="insurance"
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Inserisci costo assicurazione">
+            </div>
 
-        <div id="days_container" style="display: none;">
-            <label>Giorni lavorati totali:</label>
-            <input type="number" id="how_many_days_worked" min="0" max="365">
+            <!-- Submit Button -->
+            <button type="submit"
+                class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition duration-200">
+                Calcola Netto
+            </button>
+        </form>
+
+        <!-- Result Box -->
+        <div id="resultContainer" class="mt-6 hidden bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <h2 class="text-lg font-bold text-gray-800 mb-2">Risultato:</h2>
+            <div id="resultContent" class="text-gray-700 space-y-1 text-sm">
+                <!-- Risultati dinamici -->
+            </div>
         </div>
-
-        <label>Assicurazione auto annuale (opzionale):</label>
-        <input type="number" id="car_insurance" value="0" step="any">
-
-        <button onclick="sendData()">Calcola Netto Totale</button>
-
-        <h2 id="result" style="color: blue;">Il risultato apparirà qui...</h2>
     </div>
-
-    <script>
-        function toggleDaysField() {
-            const expensesVal = document.getElementById('car_expenses_per_day').value;
-            const daysContainer = document.getElementById('days_container');
-            const daysInput = document.getElementById('how_many_days_worked');
-
-            if (expensesVal !== "" && parseFloat(expensesVal) > 0) {
-                daysContainer.style.display = "block";
-            } else {
-                daysContainer.style.display = "none";
-                daysInput.value = "";
-            }
-        }
-
-        async function sendData() {
-            const monthsVal = document.getElementById('how_many_months').value;
-            const incomeVal = document.getElementById('total_income').value;
-            const taxVal = document.getElementById('tax_rate').value;
-            const atecoVal = document.getElementById('ateco_code').value;
-            const expensesVal = document.getElementById('car_expenses_per_day').value;
-            const daysVal = document.getElementById('how_many_days_worked').value;
-            const insuranceVal = document.getElementById('car_insurance').value;
-
-            const resultElement = document.getElementById('result');
-
-            if (incomeVal === "" || monthsVal === "" || taxVal === "" || atecoVal === "") {
-                resultElement.innerText = "❌ Attenzione: compila i campi obbligatori!";
-                resultElement.style.color = "red";
-                return;
-            }
-
-            const expensesNum = expensesVal === "" ? 0 : parseFloat(expensesVal);
-            const daysNum = daysVal === "" ? 0 : parseInt(daysVal);
-
-            if (expensesNum > 0 && daysNum <= 0) {
-                resultElement.innerText = "❌ Attenzione: hai inserito le spese del mezzo, quindi devi inserire anche i giorni lavorati!";
-                resultElement.style.color = "red";
-                return;
-            }
-
-            const requestData = {
-                how_many_months: parseInt(monthsVal),
-                total_income: parseFloat(incomeVal),
-                tax_rate: parseFloat(taxVal),
-                ateco_code: atecoVal,
-                car_expenses_per_day: expensesNum,
-                how_many_days_worked: daysNum,
-                car_insurance: insuranceVal === "" ? 0 : parseFloat(insuranceVal)
-            };
-
-            try {
-                const response = await fetch('/calculation', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(requestData)
-                });
-
-                if (!response.ok) {
-                    resultElement.innerText = "❌ Errore: dati inviati non validi!";
-                    resultElement.style.color = "red";
-                    return;
-                }
-
-                const resultData = await response.json();
-                resultElement.innerText = "✅ Netto Totale: " + resultData.net_income + " €";
-                resultElement.style.color = "green";
-
-            } catch (error) {
-                resultElement.innerText = "❌ Impossibile connettersi al server.";
-                resultElement.style.color = "red";
-            }
-        }
-    </script>
 </body>
 </html>
