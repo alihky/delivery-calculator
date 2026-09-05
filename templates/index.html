@@ -3,44 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <title>Calcolo Netto Totale Rider - Regime Forfettario</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        h1 { color: #333; font-size: 22px; text-align: center; margin-bottom: 25px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; color: #444; }
+        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; margin-bottom: 15px; }
+        button { width: 100%; background-color: #28a745; color: white; padding: 12px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        button:hover { background-color: #218838; }
+        #result { font-size: 18px; text-align: center; margin-top: 20px; padding: 15px; border-radius: 5px; background: #e9ecef; }
+    </style>
 </head>
 <body>
-    <h1>Calcolo Netto Totale Rider - Regime Forfettario</h1>
+    <div class="container">
+        <h1>Calcolo Netto Totale Rider - Regime Forfettario</h1>
 
-    <label>Incasso lordo totale:</label>
-    <input type="number" id="total_income" step="any"><br><br>
+        <label>Incasso lordo totale:</label>
+        <input type="number" id="total_income" step="any">
 
-    <label>P. IVA Regime Forfettario (5% o 15%):</label>
-    <select id="tax_rate">
-        <option value="" disabled selected>-- Seleziona aliquota --</option>
-        <option value="5">5%</option>
-        <option value="15">15%</option>
-    </select><br><br>
+        <label>P. IVA Regime Forfettario (5% o 15%):</label>
+        <select id="tax_rate">
+            <option value="" disabled selected>-- Seleziona aliquota --</option>
+            <option value="5">5%</option>
+            <option value="15">15%</option>
+        </select>
 
-    <label>Codice ATECO:</label>
-    <select id="ateco_code">
-        <option value="" disabled selected>-- Seleziona codice ATECO --</option>
-        <option value="53.20.00">53.20.00 (Gestione Separata - % variabile)</option>
-        <option value="82.99.99">82.99.99 (Commercianti - Contributo fisso)</option>
-    </select><br><br>
+        <label>Codice ATECO:</label>
+        <select id="ateco_code">
+            <option value="" disabled selected>-- Seleziona codice ATECO --</option>
+            <option value="53.20.00">53.20.00 (Gestione Separata - % variabile)</option>
+            <option value="82.99.99">82.99.99 (Commercianti - Contributo fisso)</option>
+        </select>
 
-    <label>Per quanti mesi hai incassato questa somma (<span style="color: red;">inclusi i mesi di pausa o ferie</span>):</label><br>
-    <input type="number" id="how_many_months" min="1" max="12"><br><br>
+        <label>Per quanti mesi hai incassato questa somma (<span style="color: red;">inclusi i mesi di pausa o ferie</span>):</label>
+        <input type="number" id="how_many_months" min="1" max="12">
 
-    <label>Spese del mezzo di trasporto giornaliere (auto, moto, bici, ecc. - opzionale):</label>
-    <input type="number" id="car_expenses_per_day" value="0" step="any" oninput="toggleDaysField()"><br><br>
+        <label>Spese del mezzo di trasporto giornaliere (auto, moto, bici, ecc. - opzionale):</label>
+        <input type="number" id="car_expenses_per_day" value="0" step="any" oninput="toggleDaysField()">
 
-    <div id="days_container" style="display: none;">
-        <label>Giorni lavorati totali:</label>
-        <input type="number" id="how_many_days_worked" min="0" max="365"><br><br>
+        <div id="days_container" style="display: none;">
+            <label>Giorni lavorati totali:</label>
+            <input type="number" id="how_many_days_worked" min="0" max="365">
+        </div>
+
+        <label>Assicurazione auto annuale (opzionale):</label>
+        <input type="number" id="car_insurance" value="0" step="any">
+
+        <button onclick="sendData()">Calcola Netto Totale</button>
+
+        <h2 id="result" style="color: blue;">Il risultato apparirà qui...</h2>
     </div>
-
-    <label>Assicurazione auto annuale (opzionale):</label>
-    <input type="number" id="car_insurance" value="0" step="any"><br><br>
-
-    <button onclick="sendData()">Calcola Netto Totale</button>
-
-    <h2 id="result" style="color: blue;">Il risultato apparirà qui...</h2>
 
     <script>
         function toggleDaysField() {
