@@ -1,115 +1,523 @@
+```html
 <!DOCTYPE html>
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calcolatore Netto Rider Regime Forfettario</title>
+
+    <title>Calcolo Netto Totale Rider - Regime Forfettario</title>
+
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h1 { color: #333; font-size: 22px; text-align: center; margin-bottom: 25px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; color: #444; }
-        input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; margin-bottom: 15px; }
-        button { width: 100%; background-color: #28a745; color: white; padding: 12px; border: none; border-radius: 5px; font-size: 16px; cursor: pointer; margin-top: 10px; }
-        button:hover { background-color: #218838; }
-        #result { font-size: 18px; text-align: center; margin-top: 20px; padding: 15px; border-radius: 5px; background: #e9ecef; }
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #333;
+            font-size: 22px;
+            text-align: center;
+            margin: 0 0 25px 0;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+            color: #444;
+            line-height: 1.4;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 11px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-bottom: 18px;
+            font-size: 16px;
+            background-color: white;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #28a745;
+        }
+
+        button {
+            width: 100%;
+            background-color: #28a745;
+            color: white;
+            padding: 13px;
+            border: none;
+            border-radius: 5px;
+            font-size: 17px;
+            cursor: pointer;
+            margin-top: 5px;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        #result {
+            font-size: 17px;
+            line-height: 1.6;
+            margin-top: 20px;
+            padding: 18px;
+            border-radius: 5px;
+            background-color: #e9ecef;
+            color: #333;
+        }
+
+        .net-income {
+            color: green;
+            font-size: 25px;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #ccc;
+            margin: 15px 0;
+        }
+
+        .optional {
+            font-weight: normal;
+            color: #777;
+            font-size: 14px;
+        }
+
+        @media (max-width: 600px) {
+
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                padding: 20px 16px;
+                border-radius: 8px;
+            }
+
+            h1 {
+                font-size: 20px;
+                margin-bottom: 22px;
+            }
+
+            label {
+                font-size: 15px;
+            }
+
+            input,
+            select {
+                padding: 12px;
+                font-size: 16px;
+                margin-bottom: 16px;
+            }
+
+            button {
+                padding: 14px;
+                font-size: 17px;
+            }
+
+            #result {
+                font-size: 16px;
+                padding: 15px;
+            }
+
+            .net-income {
+                font-size: 23px;
+            }
+        }
     </style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>Calcolatore Netto Rider Regime Forfettario</h1>
 
-        <label>Incasso lordo totale:</label>
-        <input type="number" id="total_income" step="any">
+<div class="container">
 
-        <label>P. IVA Regime Forfettario (5% o 15%):</label>
-        <select id="tax_rate">
-            <option value="" disabled selected>-- Seleziona aliquota --</option>
-            <option value="5">5%</option>
-            <option value="15">15%</option>
-        </select>
+    <h1>Calcolo Netto Totale Rider</h1>
 
-        <label>Codice ATECO:</label>
-        <select id="ateco_code">
-            <option value="" disabled selected>-- Seleziona codice ATECO --</option>
-            <option value="53.20.00">53.20.00 (Gestione Separata - % variabile)</option>
-            <option value="82.99.99">82.99.99 (Commercianti - Contributo fisso)</option>
-        </select>
+    <label for="total_income">
+        Incasso lordo totale:
+    </label>
 
-        <label>Per quanti mesi hai incassato questa somma (<span style="color: red;">inclusi i mesi di pausa o ferie</span>):</label>
-        <input type="number" id="how_many_months" min="1" max="12">
+    <input
+        type="number"
+        id="total_income"
+        min="0"
+        step="0.01"
+        placeholder="Es. 5000"
+    >
 
-        <label>Spese del mezzo di trasporto giornaliere (auto, moto, bici, ecc. - opzionale):</label>
-        <input type="number" id="car_expenses_per_day" step="any" oninput="toggleDaysField()" placeholder="Es. 5">
+    <label for="tax_rate">
+        P. IVA Regime Forfettario (5% o 15%):
+    </label>
 
-        <div id="days_container" style="display: none;">
-            <label>Giorni lavorati totali:</label>
-            <input type="number" id="how_many_days_worked" min="0" max="365">
-        </div>
+    <select id="tax_rate">
+        <option value="" disabled selected>
+            -- Seleziona aliquota --
+        </option>
 
-        <label>Assicurazione mezzo annuale (opzionale):</label>
-        <input type="number" id="car_insurance" step="any" placeholder="Es. 400">
+        <option value="5">5%</option>
+        <option value="15">15%</option>
+    </select>
 
-        <button onclick="sendData()">Calcola Netto Totale</button>
+    <label for="ateco_code">
+        Codice ATECO:
+    </label>
 
-        <h2 id="result" style="color: blue;">Il risultato apparirà qui...</h2>
+    <select id="ateco_code">
+
+        <option value="" disabled selected>
+            -- Seleziona codice ATECO --
+        </option>
+
+        <option value="53.20.00">
+            53.20.00 (Gestione Separata - % variabile)
+        </option>
+
+        <option value="82.99.99">
+            82.99.99 (Commercianti - Contributo fisso)
+        </option>
+
+    </select>
+
+    <label for="how_many_months">
+
+        Per quanti mesi hai incassato questa somma
+
+        <span style="color:red;">
+            (inclusi i mesi di pausa o ferie)
+        </span>:
+
+    </label>
+
+    <input
+        type="number"
+        id="how_many_months"
+        min="1"
+        max="12"
+        placeholder="Es. 4"
+    >
+
+    <label for="car_expenses_per_day">
+
+        Spese del mezzo di trasporto giornaliere
+
+        <span class="optional">
+            (auto, moto, bici, ecc. - opzionale)
+        </span>:
+
+    </label>
+
+    <input
+        type="number"
+        id="car_expenses_per_day"
+        min="0"
+        step="0.01"
+        placeholder="Es. 15"
+        oninput="toggleDaysField()"
+    >
+
+    <div id="days_container" style="display:none;">
+
+        <label for="how_many_days_worked">
+            Giorni lavorati totali:
+        </label>
+
+        <input
+            type="number"
+            id="how_many_days_worked"
+            min="0"
+            max="365"
+            placeholder="Es. 80"
+        >
+
     </div>
 
+    <label for="car_insurance">
+
+        Assicurazione auto annuale
+
+        <span class="optional">
+            (opzionale)
+        </span>:
+
+    </label>
+
+    <input
+        type="number"
+        id="car_insurance"
+        min="0"
+        step="0.01"
+        placeholder="Es. 1200"
+    >
+
+    <button onclick="sendData()">
+        Calcola Netto Totale
+    </button>
+
+    <div id="result">
+        Il risultato apparirà qui...
+    </div>
+
+</div>
+
 <script>
-    // Mostra/Nasconde il campo dei giorni lavorati
-    function toggleDaysField() {
-        var expenses = document.getElementById("car_expenses_per_day").value;
-        var daysContainer = document.getElementById("days_container");
-        if (expenses !== "" && parseFloat(expenses) > 0) {
-            daysContainer.style.display = "block";
-        } else {
-            daysContainer.style.display = "none";
-            document.getElementById("how_many_days_worked").value = "";
-        }
+
+function toggleDaysField() {
+
+    const expenses =
+        parseFloat(
+            document.getElementById("car_expenses_per_day").value
+        ) || 0;
+
+    const daysContainer =
+        document.getElementById("days_container");
+
+    if (expenses > 0) {
+
+        daysContainer.style.display = "block";
+
+    } else {
+
+        daysContainer.style.display = "none";
+
+        document.getElementById(
+            "how_many_days_worked"
+        ).value = "";
+    }
+}
+
+
+async function sendData() {
+
+    const totalIncome =
+        parseFloat(
+            document.getElementById("total_income").value
+        );
+
+    const taxRate =
+        parseInt(
+            document.getElementById("tax_rate").value
+        );
+
+    const atecoCode =
+        document.getElementById("ateco_code").value;
+
+    const months =
+        parseInt(
+            document.getElementById("how_many_months").value
+        );
+
+    const carExpenses =
+        parseFloat(
+            document.getElementById("car_expenses_per_day").value
+        ) || 0;
+
+    const daysWorked =
+        parseInt(
+            document.getElementById("how_many_days_worked").value
+        ) || 0;
+
+    const carInsurance =
+        parseFloat(
+            document.getElementById("car_insurance").value
+        ) || 0;
+
+
+    if (isNaN(totalIncome) || totalIncome < 0) {
+
+        showError(
+            "Inserisci l'incasso lordo totale."
+        );
+
+        return;
     }
 
-    // Invia i dati al backend
-    async function sendData() {
-        const payload = {
-            total_income: document.getElementById("total_income").value,
-            tax_rate: document.getElementById("tax_rate").value,
-            ateco_code: document.getElementById("ateco_code").value,
-            how_many_months: document.getElementById("how_many_months").value,
-            car_expenses_per_day: document.getElementById("car_expenses_per_day").value || 0,
-            how_many_days_worked: document.getElementById("how_many_days_worked").value || 0,
-            car_insurance: document.getElementById("car_insurance").value || 0
-        };
 
-        if (!payload.total_income || !payload.tax_rate || !payload.ateco_code || !payload.how_many_months) {
-            document.getElementById("result").innerText = "Compila tutti i campi obbligatori.";
-            document.getElementById("result").style.color = "red";
+    if (isNaN(taxRate)) {
+
+        showError(
+            "Seleziona l'aliquota fiscale."
+        );
+
+        return;
+    }
+
+
+    if (!atecoCode) {
+
+        showError(
+            "Seleziona il codice ATECO."
+        );
+
+        return;
+    }
+
+
+    if (
+        isNaN(months) ||
+        months < 1 ||
+        months > 12
+    ) {
+
+        showError(
+            "Inserisci il numero di mesi."
+        );
+
+        return;
+    }
+
+
+    if (
+        carExpenses > 0 &&
+        daysWorked <= 0
+    ) {
+
+        showError(
+            "Inserisci i giorni lavorati."
+        );
+
+        return;
+    }
+
+
+    const data = {
+
+        how_many_months: months,
+
+        total_income: totalIncome,
+
+        tax_rate: taxRate,
+
+        ateco_code: atecoCode,
+
+        car_expenses_per_day: carExpenses,
+
+        how_many_days_worked: daysWorked,
+
+        car_insurance: carInsurance
+
+    };
+
+
+    try {
+
+        const response = await fetch(
+            "/calculation",
+            {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify(data)
+            }
+        );
+
+
+        const result =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            console.error(result);
+
+            showError(
+                "Errore nei dati inviati al server."
+            );
+
             return;
         }
 
-        document.getElementById("result").innerText = "Calcolo in corso...";
-        document.getElementById("result").style.color = "black";
 
-        try {
-            // Nota: Se il tuo endpoint FastAPI in backend si chiama diversamente, cambia '/calcola' qui sotto
-            const response = await fetch('/calcola', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+        document.getElementById("result").innerHTML = `
 
-            if (response.ok) {
-                const data = await response.json();
-                document.getElementById("result").innerText = "Netto Totale: € " + data.netto; // Adatta 'data.netto' in base alla risposta del tuo Python
-                document.getElementById("result").style.color = "blue";
-            } else {
-                document.getElementById("result").innerText = "Errore dal server.";
-                document.getElementById("result").style.color = "red";
-            }
-        } catch (error) {
-            document.getElementById("result").innerText = "Errore di connessione.";
-            document.getElementById("result").style.color = "red";
-        }
+            <strong>Incasso lordo:</strong>
+            € ${result.total_income.toFixed(2)}
+
+            <br>
+
+            <strong>Imposta:</strong>
+            € ${result.tax_amount.toFixed(2)}
+
+            <br>
+
+            <strong>INPS:</strong>
+            € ${result.inps_amount.toFixed(2)}
+
+            <br>
+
+            <strong>Spese trasporto:</strong>
+            € ${result.car_expenses.toFixed(2)}
+
+            <br>
+
+            <strong>Totale spese:</strong>
+            € ${result.total_expenses.toFixed(2)}
+
+            <hr>
+
+            <div class="net-income">
+
+                NETTO:
+                € ${result.net_income.toFixed(2)}
+
+            </div>
+
+        `;
+
     }
+
+
+    catch (error) {
+
+        console.error(error);
+
+        showError(
+            "Impossibile connettersi al server."
+        );
+    }
+}
+
+
+function showError(message) {
+
+    document.getElementById("result").innerHTML =
+        `<div class="error">${message}</div>`;
+}
+
 </script>
+
 </body>
 </html>
+```
